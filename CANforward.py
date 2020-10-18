@@ -10,7 +10,9 @@ LOCAL_PORT = 8000 #Port on local machine to listen for CAN frames
 CAN_IF = "can0" #SocketCAN interface
 
 def prettyprint(binstr):
-    return ' '.join(["0x%02x"%ord(x) for x in binstr])
+    #Assume 4 bytes of address and then some data
+    chrs = ["0x%02x"%ord(x) for x in binstr]
+    return ' '.join(chrs[:4]) + ' | ' + ' '.join(chrs[4:])
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((LOCAL_IP, LOCAL_PORT))
@@ -37,7 +39,7 @@ with can.interface.Bus(CAN_IF, bustype='socketcan') as bus:
                 #print "Data:", ["0x%02x"%x for x in data]
                 canmsg = can.Message(arbitration_id=addr, data=data, is_extended_id=True)
                 bus.send(canmsg)
-                print "[N->C]", canmsg
+                print "[N->C]", prettyprint(instr)
 
         except KeyboardInterrupt:
             break

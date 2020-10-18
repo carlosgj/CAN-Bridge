@@ -14,7 +14,7 @@ def prettyprint(binstr):
 
 sendsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 recsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-recsock.bind((LOCAL_PORT, LOCAL_PORT))
+recsock.bind((LOCAL_IP, LOCAL_PORT))
 recsock.setblocking(0)
 
 with can.interface.Bus(CAN_IF, bustype='socketcan') as bus:

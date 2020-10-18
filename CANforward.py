@@ -12,10 +12,9 @@ CAN_IF = "can0" #SocketCAN interface
 def prettyprint(binstr):
     return ' '.join(["0x%02x"%ord(x) for x in binstr])
 
-sendsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-recsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-recsock.bind((LOCAL_IP, LOCAL_PORT))
-recsock.setblocking(0)
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind((LOCAL_IP, LOCAL_PORT))
+sock.setblocking(0)
 
 with can.interface.Bus(CAN_IF, bustype='socketcan') as bus:
     while True:
@@ -25,11 +24,11 @@ with can.interface.Bus(CAN_IF, bustype='socketcan') as bus:
                 addrstr = struct.pack('>I', message.arbitration_id)
                 datastr = ''.join([chr(x) for x in message.data])
                 outstr = addrstr + datastr
-                sendsock.sendto(outstr, (REMOTE_IP, REMOTE_PORT))
+                sock.sendto(outstr, (REMOTE_IP, REMOTE_PORT))
                 print "[C->N]", prettyprint(outstr)
             instr = ""
             try:
-                instr, fromip = recsock.recvfrom(12)
+                instr, fromip = sock.recvfrom(12)
             except socket.error as e:
                 pass
             if instr:
